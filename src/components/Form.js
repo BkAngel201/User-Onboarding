@@ -111,7 +111,7 @@ function Form () {
 
     const validateChange = e => { 
         yup.reach(formSchema, e.target.name)
-        .validate(e.target.value)
+        .validate((e.target.type === "checkbox") ? e.target.checked : e.target.value)
         .then(valid => {
             setErrors({
                 ...errors,
@@ -129,9 +129,10 @@ function Form () {
     const handleEvent = e => {
         e.persist()
         const newFormValues = {
-            ... formValues,
+            ...formValues,
             [e.target.name]: (e.target.type === "checkbox") ? e.target.checked : e.target.value
         }
+        
         validateChange(e)
         setFormValues(newFormValues)
     }
@@ -160,13 +161,13 @@ function Form () {
         formSchema.isValid(formValues).then(isValid => {
             setButtonDisabled(!isValid)
         })
-    }, [formValues])
+    }, [formValues, formSchema])
 
     const [dropdownOpen, setDropdownOpen] = useState(false)
 
     const dropdownHandle = e => {
         const newFormValues = {
-            ... formValues,
+            ...formValues,
             role: e.target.textContent
         }
         validateChange({target:{name:"role",value:e.target.textContent}})
@@ -198,13 +199,13 @@ function Form () {
             <Label>
                 Role:
                 <Dropdown>
-                    <Input type="text" value={formValues.role} readonly/><DropdownButton onClick={openDropdown}>+</DropdownButton>
+                    <Input type="text" value={formValues.role} readonly name="role"/><DropdownButton onClick={openDropdown} data-cy="dropdownButton">+</DropdownButton>
                     {dropdownOpen ? (
                     <DropdownItems>
-                        <Item onClick={dropdownHandle}>Regular User</Item>
-                        <Item onClick={dropdownHandle}>Moderator</Item>
-                        <Item onClick={dropdownHandle}>Web Admin</Item>
-                        <Item onClick={dropdownHandle}>Root Admin</Item>
+                        <Item onClick={dropdownHandle} data-cy="regularUser">Regular User</Item>
+                        <Item onClick={dropdownHandle} data-cy="moderator">Moderator</Item>
+                        <Item onClick={dropdownHandle} data-cy="webAdmin">Web Admin</Item>
+                        <Item onClick={dropdownHandle} data-cy="rootAdmin">Root Admin</Item>
                     </DropdownItems>) : null
                     }
                 </Dropdown>
